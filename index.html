@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./jquery-3.6.0.min.js"></script>
+    <script src="./xlsx.full.min.js"></script>
+
+
+
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" id="file" multiple>
+
+    <script>
+        function handleDrop(f) {
+            return new Promise(function(rev, rej) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, {
+                        type: 'array'
+                    });
+                    var first_sheet_name = workbook.SheetNames[0];
+                    var worksheet = workbook.Sheets[first_sheet_name];
+                    rev({
+                        "name": f.name,
+                        value: XLSX.utils.sheet_to_json(worksheet)
+                    });
+
+                };
+                reader.readAsArrayBuffer(f);
+            })
+
+        }
+
+        $("#file").change(function(e) {
+            for (var i = 0; i < e.target.files.length; i++)
+                handleDrop(e.target.files[i]).then(function(resp) {
+                    console.log("resp=>", resp);
+                })
+        })
+    </script>
+</body>
+
+</html>

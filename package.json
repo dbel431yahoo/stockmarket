@@ -1,0 +1,21 @@
+{
+    "name": "stock_market",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "dotenv": "^9.0.2",
+        "express": "^4.17.1",
+        "lodash": "^4.17.21",
+        "mongoose": "^5.12.8",
+        "mongoose-datatable": "^3.1.0",
+        "path": "^0.12.7"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "start": "node app.js"
+    },
+    "author": "",
+    "license": "ISC"
+}
