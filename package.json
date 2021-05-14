@@ -14,7 +14,8 @@
     },
     "devDependencies": {},
     "scripts": {
-        "start": "node app.js"
+        "start": "node app.js",
+        "heroku": "git push heroku master"
     },
     "author": "",
     "license": "ISC"
