@@ -4,7 +4,7 @@ var settings = {
     "headers": {
         "Content-Type": "application/json"
     },
-    "data": JSON.stringify({}),
+    "data": JSON.stringify({ find: {}, limit: 10 }),
 };
 
 $.ajax(settings).done(function(response) {
