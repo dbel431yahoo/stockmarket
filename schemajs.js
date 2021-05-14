@@ -6,5 +6,14 @@ module.exports = {
         industry: String,
         series: String,
         symbol: String
+    }),
+    result: new mongoose.Schema({
+        company: String,
+        date: Date,
+        details: String,
+        purpose: String,
+        symbol: String,
+        sysdate: { type: Date, default: Date.now },
+
     })
 }

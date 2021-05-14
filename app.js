@@ -21,6 +21,7 @@ app.use(function(req, res, next) {
 
 
 const Indices = mongoose.model('Indices', scm.indicesScm);
+const Result = mongoose.model('Result', scm.result);
 
 
 const kitty = new Indices({
@@ -39,11 +40,17 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-app.post('/test', (req, res) => {
+app.post('/indicesm', (req, res) => {
+    res.send(req.body);
     Indices.insertMany(req.body, function(err, resp) {
         res.send(resp)
     });
-
+})
+app.post('/Resultm', (req, res) => {
+    res.send(req.body);
+    Indices.Result(req.body, function(err, resp) {
+        res.send(resp)
+    });
 })
 
 
