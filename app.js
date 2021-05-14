@@ -18,44 +18,30 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
+app.use(express.static('public'))
 
 const Indices = mongoose.model('Indices', scm.indicesScm);
 const Result = mongoose.model('Result', scm.result);
 
 
-const kitty = new Indices({
-    companyname: "companyname",
-    isincode: "isincode",
-    industry: "industry",
-    series: "series",
-    symbol: "symbol"
-});
-kitty.save().then(() => console.log('meow'));
-
-
-
-
-app.get('/', (req, res) => {
+/* app.get('/', (req, res) => {
     res.send('Hello World!')
 })
-
+ */
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
 app.post('/indicesm', (req, res) => {
-    res.send(req.body);
     Indices.insertMany(req.body, function(err, resp) {
         res.send(resp)
     });
 })
-app.post('/Resultm', (req, res) => {
-    res.send(req.body);
-    Indices.Result(req.body, function(err, resp) {
+
+app.post('/resultm', (req, res) => {
+    Result.insertMany(req.body, function(err, resp) {
         res.send(resp)
     });
 })
-
-
-
-
 
 
 app.listen(port, () => {
