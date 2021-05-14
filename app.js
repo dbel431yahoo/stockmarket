@@ -11,9 +11,37 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json())
 
+function evaluate(object) {
+    if (object && object.constructor === Array) {
+        for (var i = 0; i < object.length; i++) {
+            object[i] = evaluate(object[i]);
+        }
+    } else if (object && typeof object == 'object' && Object.keys(object).length > 0) {
+        if (Object.keys(object).indexOf('_eval') < 0) {
+            for (var key in object) {
+                object[key] = evaluate(object[key]);
+            }
+        } else switch (object['_eval']) {
+            case 'Id':
+                {
+                    object = mongoose.Types.ObjectId(object['value']);
+                    break;
+                }
+            case 'regex':
+                {
+                    object = new RegExp(object['value'], 'i');
+                    break;
+                }
+
+        }
+    }
+    return object;
+}
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+
     next();
 });
 app.use(express.static('public'))
@@ -26,6 +54,8 @@ const Result = mongoose.model('Result', scm.result);
     res.send('Hello World!')
 })
  */
+
+
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
@@ -37,7 +67,8 @@ app.post('/indicesfind', (req, res) => {
         indices.sort(req.body.sort)
     if (req.body.select)
         indices.select(req.body.select);
-
+    if (req.body.skip)
+        indices.skip(req.body.skip)
     indices.exec(function(err, resp1) {
         Result.where(req.body.find).countDocuments(function(err, resp2) {
             res.send({ data: resp1, recordsTotal: resp2, recordsFiltered: resp2, draw: new Date().getTime() });
@@ -53,6 +84,10 @@ app.post('/indicesm', (req, res) => {
 
 
 app.post('/resultfind', (req, res) => {
+
+    req.body.find = evaluate(req.body.find);
+    console.log("req.body=>", req.body.find)
+
     var result = Result.find(req.body.find);
     if (req.body.limit)
         result.limit(req.body.limit)
@@ -60,7 +95,8 @@ app.post('/resultfind', (req, res) => {
         result.sort(req.body.sort)
     if (req.body.select)
         result.select(req.body.select);
-
+    if (req.body.skip)
+        result.skip(req.body.skip)
     result.exec(function(err, resp1) {
         Result.where(req.body.find).countDocuments(function(err, resp2) {
             res.send({ data: resp1, recordsTotal: resp2, recordsFiltered: resp2, draw: new Date().getTime() });
