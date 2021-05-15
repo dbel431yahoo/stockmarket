@@ -37,7 +37,7 @@ function evaluate(object) {
     }
     return object;
 }
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
@@ -56,8 +56,12 @@ const Result = mongoose.model('Result', scm.result);
  */
 
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
+// app.get('/', function (req, res) {
+//     res.sendFile(path.join(__dirname + '/index.html'));
+// });
+
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname + '/public/html/Indices/Indices.html'));
 });
 app.post('/indicesfind', (req, res) => {
     var indices = Indices.find(req.body.find);
@@ -69,15 +73,15 @@ app.post('/indicesfind', (req, res) => {
         indices.select(req.body.select);
     if (req.body.skip)
         indices.skip(req.body.skip)
-    indices.exec(function(err, resp1) {
-        Result.where(req.body.find).countDocuments(function(err, resp2) {
+    indices.exec(function (err, resp1) {
+        Result.where(req.body.find).countDocuments(function (err, resp2) {
             res.send({ data: resp1, recordsTotal: resp2, recordsFiltered: resp2, draw: new Date().getTime() });
         })
     })
 })
 
 app.post('/indicesm', (req, res) => {
-    Indices.insertMany(req.body, function(err, resp) {
+    Indices.insertMany(req.body, function (err, resp) {
         res.send(resp)
     });
 })
@@ -97,16 +101,43 @@ app.post('/resultfind', (req, res) => {
         result.select(req.body.select);
     if (req.body.skip)
         result.skip(req.body.skip)
-    result.exec(function(err, resp1) {
-        Result.where(req.body.find).countDocuments(function(err, resp2) {
+    result.exec(function (err, resp1) {
+        Result.where(req.body.find).countDocuments(function (err, resp2) {
             res.send({ data: resp1, recordsTotal: resp2, recordsFiltered: resp2, draw: new Date().getTime() });
         })
     })
 })
 app.post('/resultm', (req, res) => {
-    Result.insertMany(req.body, function(err, resp) {
+    Result.insertMany(req.body, function (err, resp) {
         res.send(resp)
     });
+})
+
+app.post('/resultagr', (req, res) => {
+    /* 
+    db.getCollection('results').aggregate([{
+  $lookup: {
+    from: "indices",
+    as: "indices",
+    localField: "symbol",
+    foreignField: "symbol", 
+  }
+},
+{ $unwind: { path: "$indices","preserveNullAndEmptyArrays": true} },
+ { $match: { "indices.industry": "IT" } }
+ ,{ $skip : 5 }
+ ,{ $limit: 10 }
+
+//  , {
+//        $count: "company"
+//      }
+])
+ */
+    var qr = evaluate(req.body.find);
+    Result.aggregate(qr).exec(function (err, resp1) {
+        res.send(resp1)
+
+    })
 })
 
 
