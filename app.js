@@ -64,7 +64,10 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/public/html/Indices/Indices.html'));
 });
 app.post('/indicesfind', (req, res) => {
+    req.body.find = evaluate(req.body.find);
+
     var indices = Indices.find(req.body.find);
+
     if (req.body.limit)
         indices.limit(req.body.limit)
     if (req.body.sort)
@@ -73,8 +76,9 @@ app.post('/indicesfind', (req, res) => {
         indices.select(req.body.select);
     if (req.body.skip)
         indices.skip(req.body.skip)
+
     indices.exec(function (err, resp1) {
-        Result.where(req.body.find).countDocuments(function (err, resp2) {
+        Indices.find(req.body.find).countDocuments(function (err, resp2) {
             res.send({ data: resp1, recordsTotal: resp2, recordsFiltered: resp2, draw: new Date().getTime() });
         })
     })
@@ -90,7 +94,7 @@ app.post('/indicesm', (req, res) => {
 app.post('/resultfind', (req, res) => {
 
     req.body.find = evaluate(req.body.find);
-    console.log("req.body=>", req.body.find)
+
 
     var result = Result.find(req.body.find);
     if (req.body.limit)
