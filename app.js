@@ -32,6 +32,11 @@ function evaluate(object) {
                     object = new RegExp(object['value'], 'i');
                     break;
                 }
+            case 'date':
+                {
+                    object = new Date(object['value']);
+                    break;
+                }
 
         }
     }
@@ -94,7 +99,7 @@ app.post('/indicesm', (req, res) => {
 app.post('/resultfind', (req, res) => {
 
     req.body.find = evaluate(req.body.find);
-
+    console.log(req.body.find)
 
     var result = Result.find(req.body.find);
     if (req.body.limit)
